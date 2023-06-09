@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>GrowHealthy</title>
-		<link rel="icon" type="image/png" href="imagens/IE_favicon.png"/>
+		<link rel="icon" type="image/png" href="../imagens/logo1.png"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 		<link rel="stylesheet" href="../css/customize.css">
@@ -30,6 +30,27 @@
 				echo "</p> "
 				?>
 
+                <?php
+				require __DIR__ . '/vendor/autoload.php';
+				use Orhanerday\OpenAi\OpenAi;
+
+				$open_ai_key = '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';
+				$open_ai = new OpenAi($open_ai_key);
+
+				$complete = $open_ai->completion([
+					'model' => 'text-davinci-003',
+					'prompt' => "Crie um plano de treino para uma
+                    pessoa com essas características: genero:  altura:  peso:  restricoes fisicas: ",
+					'temperature' => 0.3,
+					'max_tokens' => 2048,
+					'n' => 1,
+					'stop' => null
+				]);
+				$response = json_decode($complete, true);
+				$response = $response["choices"][0]["text"];
+
+				?>
+
 				<!-- Acesso ao BD-->
 				<?php		
 				$id = $_GET['id'];
@@ -52,6 +73,7 @@
 						$row        = $result->fetch_assoc(); 
 						$idAluno    = $row['id'];
 						$nome       = $row['nome'];
+						$dataNasc   = $row['dt_nasc'];
 						$genero     = $row['genero'];
 						$altura     = $row['altura'];
 						$peso       = $row['peso'];
@@ -95,10 +117,12 @@
 
 									</td>
 									<td style="text-align:center;">
-									<p style="text-align:center"><label class="w3-text-IE"><b>Revise e poste aqui o treino: </b></label></p>
-									<input class="w3-input w3-border w3-light-grey " name="descricao" id = "descricao" type="text"  title="descricao" style="width: 90%; height:500px;">
-										
-									</p>
+										<p style="text-align:center"><label class="w3-text-IE"><b>Revise e poste aqui o treino:
+												</b></label></p>
+										<textarea class="w3-input w3-border w3-light-grey " name="postarTreino"
+											id="postarTreino" type="text" title="postarTreino"
+											style="width: 90%; height:500px;"><?php echo $response; ?></textarea>
+										</p>
 									</td>
 								</tr>
 								<tr>
